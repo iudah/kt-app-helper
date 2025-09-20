@@ -260,6 +260,20 @@ junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", vers
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version = "2.1.0" }
 EOF
+
+    cat <<EOF >"${project_name_nospace}/gradlew.sh"
+function gradlew {
+    file="./gradlew"
+    if [[ -f "$file" ]]; then
+        bash $file -Pandroid.aapt2FromMavenOverride=aapt2 $@
+    else
+        echo "Invoke this command from a project's root directory."
+    fi
+}
+
+gradlew $@
+EOF
+
 }
 
 create_project_structure() {
@@ -292,6 +306,18 @@ create_project_structure() {
 }
 
 main() {
+    missing_pkgs=""
+    for missing_pkg in wget java kotlin aapt2; do
+        if ! command -v "$missing_pkg" >/dev/null 2>&1; then
+            missing_pkgs="${missing_pkgs} ${missing_pkg}"
+        fi
+    done
+
+    if [[ -n "$missing_pkgs" ]]; then
+        echo "Installing missing packages: $missing_pkgs"
+        pkg install -y $missing_pkgs
+    fi
+
     read -p "Project Name: " project_name
     read -p "Organisation Address (e.g. com.example): " organisation_url
     read -p "Compile SDK version: " compile_sdk
