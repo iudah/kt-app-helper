@@ -33,7 +33,7 @@ This Bash script automates the creation of a minimal Android project using Kotli
 To generate a new Android project, run:
 
 ```bash
-curl -s https://raw.githubusercontent.com/iudah/kt-app-helper/main/create_android_app_project.sh | sh
+wget  https://raw.githubusercontent.com/iudah/kt-app-helper/main/create_android_app_project.sh  && bash create_android_app_project.sh
 ```
 
 You'll be prompted for:
