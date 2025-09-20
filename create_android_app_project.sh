@@ -264,14 +264,14 @@ EOF
     cat <<EOF >"${project_name_nospace}/gradlew.sh"
 function gradlew {
     file="./gradlew"
-    if [[ -f "$file" ]]; then
-        bash $file -Pandroid.aapt2FromMavenOverride=aapt2 $@
+    if [[ -f "\$file" ]]; then
+        bash "\$file" -Pandroid.aapt2FromMavenOverride=aapt2 "\$@"
     else
         echo "Invoke this command from a project's root directory."
     fi
 }
 
-gradlew $@
+gradlew "\$@"
 EOF
 
 }
