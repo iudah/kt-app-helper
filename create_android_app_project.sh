@@ -2,7 +2,7 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-LOCAL_MAVEN_DIR="/data/data/com.termux/files/home/storage/shared/Jay/app-dev/downloads"
+# LOCAL_MAVEN_DIR="/data/data/com.termux/files/home/storage/shared/Jay/app-dev/downloads"
 
 url_to_dir() { echo "$1" | tr '.' '/'; }
 
@@ -36,9 +36,9 @@ add_gradle_kts() {
     cat <<EOF >"$project_name_nospace/settings.gradle.kts"
 pluginManagement {
     repositories {
-        maven {
-            url = uri("${LOCAL_MAVEN_DIR}") 
-        }
+        // maven {
+        //     url = uri("${LOCAL_MAVEN_DIR}") 
+        // }
         gradlePluginPortal()
         google()
         mavenCentral()
@@ -48,9 +48,9 @@ pluginManagement {
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
-        maven {
-            url = uri("${LOCAL_MAVEN_DIR}") 
-        }
+        // maven {
+        //     url = uri("${LOCAL_MAVEN_DIR}") 
+        // }
         google()
         mavenCentral()
     }
@@ -96,9 +96,9 @@ android {
         compose = true
     }
 
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.7.0"
-    }
+    // composeOptions {
+    //     kotlinCompilerExtensionVersion = "1.7.0"
+    // }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -219,29 +219,29 @@ generate_gradle_wrapper() {
     GRADLEW_BAT_URL="https://raw.githubusercontent.com/iudah/kt-app-helper/main/gradlew.bat"
     WRAPPER_JAR_URL="https://raw.githubusercontent.com/iudah/kt-app-helper/main/gradle/wrapper/gradle-wrapper.jar"
 
-    if [[ -f ~/.kt_app_helper/gradlew ]]; then
-        cp ~/.kt_app_helper/gradlew "${project_name_nospace}/gradlew"
-    else
-        wget "$GRADLEW_URL" -O "${project_name_nospace}/gradlew"
-    fi
-    chmod +x "${project_name_nospace}/gradlew"
+    # if [[ -f ~/.kt_app_helper/gradlew ]]; then
+    #     cp ~/.kt_app_helper/gradlew "${project_name_nospace}/gradlew"
+    # else
+    #     wget "$GRADLEW_URL" -O "${project_name_nospace}/gradlew"
+    # fi
+    # chmod +x "${project_name_nospace}/gradlew"
 
-    if [[ -f ~/.kt_app_helper/gradlew.bat ]]; then
-        cp ~/.kt_app_helper/gradlew.bat "${project_name_nospace}/gradlew.bat"
-    else
-        wget "$GRADLEW_BAT_URL" -O "${project_name_nospace}/gradlew.bat"
-    fi
+    # if [[ -f ~/.kt_app_helper/gradlew.bat ]]; then
+    #     cp ~/.kt_app_helper/gradlew.bat "${project_name_nospace}/gradlew.bat"
+    # else
+    #     wget "$GRADLEW_BAT_URL" -O "${project_name_nospace}/gradlew.bat"
+    # fi
 
-    if [[ -f ~/.kt_app_helper/gradle/wrapper/gradle-wrapper.jar ]]; then
-        cp ~/.kt_app_helper/gradle/wrapper/gradle-wrapper.jar "${project_name_nospace}/gradle/wrapper/gradle-wrapper.jar"
-    else
-        wget "$WRAPPER_JAR_URL" -O "${project_name_nospace}/gradle/wrapper/gradle-wrapper.jar"
-    fi
+    # if [[ -f ~/.kt_app_helper/gradle/wrapper/gradle-wrapper.jar ]]; then
+    #     cp ~/.kt_app_helper/gradle/wrapper/gradle-wrapper.jar "${project_name_nospace}/gradle/wrapper/gradle-wrapper.jar"
+    # else
+    #     wget "$WRAPPER_JAR_URL" -O "${project_name_nospace}/gradle/wrapper/gradle-wrapper.jar"
+    # fi
 
     cat <<EOF >"${project_name_nospace}/gradle/wrapper/gradle-wrapper.properties"
 distributionBase=GRADLE_USER_HOME
 distributionPath=wrapper/dists
-distributionUrl=file\:///data/data/com.termux/files/home/storage/shared/Jay/app-dev/gradle-8.13-bin.zip
+distributionUrl=https\://services.gradle.org/distributions/gradle-8.13-bin.zip
 networkTimeout=10000
 validateDistributionUrl=true
 zipStoreBase=GRADLE_USER_HOME
@@ -273,6 +273,9 @@ function gradlew {
 
 gradlew "\$@"
 EOF
+
+echo Run `gradle wrapper` to make wrapper
+echo Run `bash gradlew.sh assembleDebug` or `gradle -Pandroid.aapt2FromMavenOverride=aapt2 assembleDebug` to build
 
 }
 
@@ -307,7 +310,7 @@ create_project_structure() {
 
 main() {
     missing_pkgs=""
-    for missing_pkg in wget java kotlin aapt2; do
+    for missing_pkg in wget java kotlin aapt2 aapt gradle; do
         if ! command -v "$missing_pkg" >/dev/null 2>&1; then
             missing_pkgs="${missing_pkgs} ${missing_pkg}"
         fi
