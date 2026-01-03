@@ -274,8 +274,6 @@ function gradlew {
 gradlew "\$@"
 EOF
 
-echo Run "gradle wrapper" to make wrapper
-echo Run "bash gradlew.sh assembleDebug" or "gradle -Pandroid.aapt2FromMavenOverride=aapt2 assembleDebug" to build
 
 }
 
@@ -306,6 +304,14 @@ create_project_structure() {
     add_main_activity "$project_name_nospace" "$package_name"
     add_layout "$project_name_nospace"
     generate_gradle_wrapper "$project_name_nospace"
+
+    echo Changing directory to \"$project_name_nospace\"
+    cd -p "$project_name_nospace
+
+    echo Run \"gradle wrapper\" to make wrapper
+    echo Run \"bash gradlew.sh assembleDebug\" 
+    echo or
+    echo Run \"gradle -Pandroid.aapt2FromMavenOverride=aapt2 assembleDebug\" to build
 }
 
 main() {
