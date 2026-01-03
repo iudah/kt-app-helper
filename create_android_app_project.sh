@@ -274,8 +274,8 @@ function gradlew {
 gradlew "\$@"
 EOF
 
-echo Run `gradle wrapper` to make wrapper
-echo Run `bash gradlew.sh assembleDebug` or `gradle -Pandroid.aapt2FromMavenOverride=aapt2 assembleDebug` to build
+echo Run "gradle wrapper" to make wrapper
+echo Run "bash gradlew.sh assembleDebug" or "gradle -Pandroid.aapt2FromMavenOverride=aapt2 assembleDebug" to build
 
 }
 
