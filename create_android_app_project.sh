@@ -2,7 +2,7 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-# LOCAL_MAVEN_DIR="/data/data/com.termux/files/home/storage/shared/Jay/app-dev/downloads"
+LOCAL_MAVEN_DIR="/data/data/com.termux/files/home/storage/shared/Jay/app-dev/downloads"
 
 url_to_dir() { echo "$1" | tr '.' '/'; }
 
