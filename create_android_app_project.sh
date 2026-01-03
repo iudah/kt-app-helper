@@ -306,7 +306,7 @@ create_project_structure() {
     generate_gradle_wrapper "$project_name_nospace"
 
     echo Changing directory to \"$project_name_nospace\"
-    cd -p "$project_name_nospace"
+    cd "$project_name_nospace"
 
     echo Run \"gradle wrapper\" to make wrapper
     echo Run \"bash gradlew.sh assembleDebug\" 
