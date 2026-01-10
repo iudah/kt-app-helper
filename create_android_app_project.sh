@@ -318,6 +318,23 @@ android.nonTransitiveRClass=true
 EOF
 }
 
+generate_resc() {
+project_name_nospace="$1"
+
+mkdir -p "${project_name_nospace}/app/src/main/res/values/"
+
+cat <<EOF >"${project_name_nospace}/app/src/main/res/values/themes.xml"
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+  <!-- Base application theme. -->
+  <style name="AppTheme" parent="Theme.Material3.DayNight.NoActionBar">
+    <!-- Customize your theme here. -->
+    <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+  </style>
+</resources>
+EOF
+}
+
 create_project_structure() {
     project_name="$1"
     org_url_rev="$2"
@@ -345,7 +362,8 @@ create_project_structure() {
     add_main_activity "$project_name_nospace" "$package_name"
     add_layout "$project_name_nospace"
     generate_gradle_wrapper "$project_name_nospace"
-    generate_gradle_properties
+    generate_gradle_properties "$project_name_nospace"
+    generate_resc "$project_name_nospace"
 
     echo Changing directory to \"$project_name_nospace\"
     cd "$project_name_nospace"
