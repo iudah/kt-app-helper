@@ -124,8 +124,7 @@ add_manifest() {
     package_name="$2"
 
     cat <<EOF >"$project_name_nospace/app/src/main/AndroidManifest.xml"
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="$package_name">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <application
         android:allowBackup="true"
