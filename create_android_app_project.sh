@@ -126,7 +126,7 @@ add_manifest() {
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="$package_name"
+        android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
@@ -146,12 +146,13 @@ EOF
 
 add_theme_string() {
 project_name_nospace="$1"
+project_name="$2"
 
 mkdir -p "${project_name_nospace}/app/src/main/res/values/"
 
 cat <<EOF >"${project_name_nospace}/app/src/main/res/values/strings.xml"
 <resources>
-  <string name="app_name">$project_name_nospace</string>
+  <string name="app_name">$project_name</string>
 </resources>
 EOF
 
@@ -393,7 +394,6 @@ CTestTestfile.cmake
 # Profiling and Benchmarking
 *.hprof
 *.html
-*.xml
 # Ignore simpleperf reports if you do native profiling
 perf.data
 simpleperf_report.html
@@ -444,7 +444,7 @@ create_project_structure() {
     add_gradle_kts "$project_name_nospace" "$project_name_nospace_lower" "$org_url_rev" "$compile_sdk" "$target_sdk" "$min_sdk"
     add_manifest "$project_name_nospace" "$package_name"
     add_main_activity "$project_name_nospace" "$package_name"
-    add_theme_string "$project_name_nospace"
+    add_theme_string "$project_name_nospace" "$project_name"
     generate_icons "$project_name_nospace"
     generate_gradle_wrapper "$project_name_nospace"
     generate_gradle_properties "$project_name_nospace"
