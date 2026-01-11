@@ -37,7 +37,7 @@ add_gradle_kts() {
 pluginManagement {
     repositories {
         // maven {
-        //     url = uri("${LOCAL_MAVEN_DIR}") 
+        //      url = uri("${LOCAL_MAVEN_DIR}") 
         // }
         gradlePluginPortal()
         google()
@@ -49,7 +49,7 @@ dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         // maven {
-        //     url = uri("${LOCAL_MAVEN_DIR}") 
+        //      url = uri("${LOCAL_MAVEN_DIR}") 
         // }
         google()
         mavenCentral()
@@ -63,17 +63,15 @@ EOF
     cat <<EOF >"$project_name_nospace/build.gradle.kts"
 plugins {
     id("com.android.application") version "8.13.0" apply false
-
     id("com.android.library") version "8.13.0" apply false
     id("org.jetbrains.kotlin.android") version "2.2.20" apply false
     id("org.jetbrains.kotlin.plugin.compose") version "2.2.20" apply false
 }
-
-
-
 EOF
 
     cat <<EOF >"$project_name_nospace/app/build.gradle.kts"
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -96,17 +94,15 @@ android {
         compose = true
     }
 
-    // composeOptions {
-    //     kotlinCompilerExtensionVersion = "1.7.0"
-    // }
-
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+}
 
-    kotlinOptions {
-        jvmTarget = "17"
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_17)
     }
 }
 
@@ -115,6 +111,7 @@ dependencies {
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.activity:activity-compose:1.9.0")
+    implementation("com.google.android.material:material:1.11.0")
 }
 EOF
 }
@@ -148,21 +145,65 @@ EOF
 }
 
 add_theme_string() {
-    project_name_nospace="$1"
-    package_name="$2"
+project_name_nospace="$1"
 
-    mkdir -p "$project_name_nospace/app/src/main/res/values"
+mkdir -p "${project_name_nospace}/app/src/main/res/values/"
 
-    cat <<EOF >"$project_name_nospace/app/src/main/res/values/strings.xml"
+cat <<EOF >"${project_name_nospace}/app/src/main/res/values/strings.xml"
 <resources>
-  <string name="app_name">MyApp</string>
+  <string name="app_name">$project_name_nospace</string>
 </resources>
 EOF
 
-    cat <<EOF >"$project_name_nospace/app/src/main/res/values/themes.xml"
-<resources>
-  <style name="Theme.App" parent="Theme.MaterialComponents.DayNight.NoActionBar"/>
+cat <<EOF >"${project_name_nospace}/app/src/main/res/values/themes.xml"
+<resources xmlns:tools="http://schemas.android.com/tools">
+  <style name="AppTheme" parent="Theme.Material3.DayNight.NoActionBar">
+    </style>
 </resources>
+EOF
+}
+
+generate_icons() {
+    project_name_nospace="$1"
+    res_dir="$project_name_nospace/app/src/main/res"
+
+    mkdir -p "$res_dir/mipmap-anydpi-v26"
+    mkdir -p "$res_dir/drawable"
+
+    cat <<EOF >"$res_dir/mipmap-anydpi-v26/ic_launcher.xml"
+<?xml version="1.0" encoding="utf-8"?>
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@drawable/ic_launcher_background"/>
+    <foreground android:drawable="@drawable/ic_launcher_foreground"/>
+</adaptive-icon>
+EOF
+
+    cp "$res_dir/mipmap-anydpi-v26/ic_launcher.xml" "$res_dir/mipmap-anydpi-v26/ic_launcher_round.xml"
+
+    cat <<EOF >"$res_dir/drawable/ic_launcher_background.xml"
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#3DDC84"
+        android:pathData="M0,0h108v108h-108z"/>
+</vector>
+EOF
+
+    cat <<EOF >"$res_dir/drawable/ic_launcher_foreground.xml"
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M66,66L66,66c0,0,0,0,0,0c-1.7,0-3.2-0.9-4.2-2.3l-5.6-8.2c-0.6-0.9-0.8-1.9-0.6-2.9L60,66z M41.9,66 h-0.1L41.9,66L41.9,66z M47,44.3L47,44.3c-1.7,0-3.2,0.9-4.2,2.3L32,62.7c-0.1,0.1-0.1,0.2-0.2,0.3L47,44.3z M61.1,44.3 L61.1,44.3c1.7,0,3.2,0.9,4.2,2.3l10.8,16.1c0.1,0.1,0.1,0.2,0.2,0.3L61.1,44.3z M54,34L54,34c-1.8,0-3.5,0.7-4.8,2l-6.5,6.5 l11.3,0l11.3,0l-6.5-6.5C57.5,34.7,55.8,34,54,34z"/>
+</vector>
 EOF
 }
 
@@ -203,39 +244,10 @@ class MainActivity : ComponentActivity() {
 EOF
 }
 
-add_layout() {
-    project_name_nospace="$1"
-
-    mkdir -p "$project_name_nospace/app/src/main/res/layout"
-}
-
 generate_gradle_wrapper() {
     project_name_nospace="$1"
 
     mkdir -p "${project_name_nospace}/gradle/wrapper"
-
-    GRADLEW_URL="https://raw.githubusercontent.com/iudah/kt-app-helper/main/gradlew"
-    GRADLEW_BAT_URL="https://raw.githubusercontent.com/iudah/kt-app-helper/main/gradlew.bat"
-    WRAPPER_JAR_URL="https://raw.githubusercontent.com/iudah/kt-app-helper/main/gradle/wrapper/gradle-wrapper.jar"
-
-    # if [[ -f ~/.kt_app_helper/gradlew ]]; then
-    #     cp ~/.kt_app_helper/gradlew "${project_name_nospace}/gradlew"
-    # else
-    #     wget "$GRADLEW_URL" -O "${project_name_nospace}/gradlew"
-    # fi
-    # chmod +x "${project_name_nospace}/gradlew"
-
-    # if [[ -f ~/.kt_app_helper/gradlew.bat ]]; then
-    #     cp ~/.kt_app_helper/gradlew.bat "${project_name_nospace}/gradlew.bat"
-    # else
-    #     wget "$GRADLEW_BAT_URL" -O "${project_name_nospace}/gradlew.bat"
-    # fi
-
-    # if [[ -f ~/.kt_app_helper/gradle/wrapper/gradle-wrapper.jar ]]; then
-    #     cp ~/.kt_app_helper/gradle/wrapper/gradle-wrapper.jar "${project_name_nospace}/gradle/wrapper/gradle-wrapper.jar"
-    # else
-    #     wget "$WRAPPER_JAR_URL" -O "${project_name_nospace}/gradle/wrapper/gradle-wrapper.jar"
-    # fi
 
     cat <<EOF >"${project_name_nospace}/gradle/wrapper/gradle-wrapper.properties"
 distributionBase=GRADLE_USER_HOME
@@ -272,14 +284,11 @@ function gradlew {
 
 gradlew "\$@"
 EOF
-
-
 }
 
 generate_gradle_properties(){
     project_name_nospace="$1"
 
-cat <<EOF >"${project_name_nospace}/gradle.properties"
 # Project-wide Gradle settings.
 # IDE (e.g. Android Studio) users:
 # Gradle settings configured through the IDE *will override*
@@ -288,7 +297,7 @@ cat <<EOF >"${project_name_nospace}/gradle.properties"
 # http://www.gradle.org/docs/current/userguide/build_environment.html
 
 # Specifies the JVM arguments used for the daemon process.
-org.gradle.jvmargs=-Xmx4096m -Dfile.encoding=UTF-8
+org.gradle.jvmargs=-Xmx1048m -Dfile.encoding=UTF-8
 
 # When configured, Gradle will run in incubating parallel mode.
 # This option should only be used with decoupled projects. More details, visit
@@ -318,23 +327,6 @@ android.nonTransitiveRClass=true
 EOF
 }
 
-generate_resc() {
-project_name_nospace="$1"
-
-mkdir -p "${project_name_nospace}/app/src/main/res/values/"
-
-cat <<EOF >"${project_name_nospace}/app/src/main/res/values/themes.xml"
-
-<resources xmlns:tools="http://schemas.android.com/tools">
-  <!-- Base application theme. -->
-  <style name="AppTheme" parent="Theme.Material3.DayNight.NoActionBar">
-    <!-- Customize your theme here. -->
-    <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
-  </style>
-</resources>
-EOF
-}
-
 create_project_structure() {
     project_name="$1"
     org_url_rev="$2"
@@ -346,7 +338,6 @@ create_project_structure() {
     project_name_nospace_lower=$(echo "$project_name_nospace" | tr '[:upper:]' '[:lower:]')
 
     org_url_rev=$(sanitize_package "$org_url_rev")
-
     package_name="$org_url_rev.$project_name_nospace_lower"
 
     if ! is_integer "$compile_sdk" || ! is_integer "$target_sdk" || ! is_integer "$min_sdk"; then
@@ -355,23 +346,20 @@ create_project_structure() {
     fi
 
     mkdir -p "$project_name_nospace"
-    mkdir -p "$project_name_nospace/app/src/main/res/values"
 
     add_gradle_kts "$project_name_nospace" "$project_name_nospace_lower" "$org_url_rev" "$compile_sdk" "$target_sdk" "$min_sdk"
     add_manifest "$project_name_nospace" "$package_name"
     add_main_activity "$project_name_nospace" "$package_name"
     add_layout "$project_name_nospace"
+    generate_icons "$project_name_nospace"
     generate_gradle_wrapper "$project_name_nospace"
     generate_gradle_properties "$project_name_nospace"
-    generate_resc "$project_name_nospace"
 
     echo Changing directory to \"$project_name_nospace\"
     cd "$project_name_nospace"
 
-    echo Run \"gradle wrapper\" to make wrapper
-    echo Run \"bash gradlew.sh assembleDebug\" 
-    echo or
-    echo Run \"gradle -Pandroid.aapt2FromMavenOverride=aapt2 assembleDebug\" to build
+    echo "Project created successfully."
+    echo "Run \"gradle -Pandroid.aapt2FromMavenOverride=aapt2 assembleDebug\" to build."
 }
 
 main() {
@@ -389,12 +377,12 @@ main() {
 
     read -p "Project Name: " project_name
     read -p "Organisation Address (e.g. com.example): " organisation_url
-    read -p "Compile SDK version: " compile_sdk
-    read -p "Target SDK version: " target_sdk
-    read -p "Min SDK version: " min_sdk
+    read -p "Compile SDK version [34]: " compile_sdk
+    read -p "Target SDK version [34]: " target_sdk
+    read -p "Min SDK version [24]: " min_sdk
 
     if [[ -z "${project_name}" ]]; then
-        project_name="Project Name"
+        project_name="MyProject"
     fi
     if [[ -z "$organisation_url" ]]; then
         organisation_url="com.example"
@@ -403,7 +391,7 @@ main() {
         compile_sdk=34
     fi
     if [[ -z "$target_sdk" ]]; then
-        target_sdk=24
+        target_sdk=34
     fi
     if [[ -z "$min_sdk" ]]; then
         min_sdk=24
