@@ -129,7 +129,7 @@ add_manifest() {
         android:label="$package_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar">
+        android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -288,7 +288,8 @@ EOF
 
 generate_gradle_properties(){
     project_name_nospace="$1"
-
+    
+    cat <<EOF >"${project_name_nospace}/gradle.properties"
 # Project-wide Gradle settings.
 # IDE (e.g. Android Studio) users:
 # Gradle settings configured through the IDE *will override*
@@ -327,6 +328,99 @@ android.nonTransitiveRClass=true
 EOF
 }
 
+generate_gitignore(){
+    project_name_nospace="$1"
+    
+    cat <<EOF >"${project_name_nospace}/.gitignore"
+# Built application files
+*.apk
+*.aar
+*.ap_
+*.aab
+
+# Android / Gradle Build Artifacts
+/build
+.gradle/
+**/build/
+!libs/
+
+# Android Studio / IntelliJ IDEA
+# Uncomment the following line prevent sharing project settings
+# .idea/
+.idea/modules.xml
+.idea/jarRepositories.xml
+.idea/compiler.xml
+.idea/encodings.xml
+.idea/misc.xml
+.idea/vcs.xml
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/gradle.xml
+.idea/assetWizardSettings.xml
+.idea/dictionaries
+.idea/libraries
+.idea/caches
+# Android Studio Navigation Editor
+.idea/navEditor.xml
+
+# Local configuration file (contains SDK/NDK paths - NEVER COMMIT THIS)
+local.properties
+
+# Modern CMake/Gradle Native Builds (AGP 4.x+)
+.cxx/
+
+# Legacy CMake/Gradle Native Builds
+.externalNativeBuild/
+
+# Legacy 'ndk-build' artifacts (if using Android.mk)
+# These are often created in the module root if running ndk-build manually
+obj/
+# Be careful with 'libs/'. 
+# If you use 'libs/' for third-party jars/so files, keep it. 
+# If it only contains build output from ndk-build, ignore it.
+# The standard practice now is to put prebuilts in 'src/main/jniLibs'.
+# So usually we ignore the generated build output:
+app/src/main/libs
+app/src/main/obj
+
+# CMake manual generation artifacts (if running cmake outside gradle)
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+CTestTestfile.cmake
+
+# Profiling and Benchmarking
+*.hprof
+*.html
+*.xml
+# Ignore simpleperf reports if you do native profiling
+perf.data
+simpleperf_report.html
+
+# Kotlin / Java
+*.class
+
+# Log files
+*.log
+
+# System files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# VS Code (if you edit C++ files there)
+.vscode/
+
+# Capture files (layout inspector)
+captures/
+EOF
+}
+
 create_project_structure() {
     project_name="$1"
     org_url_rev="$2"
@@ -350,10 +444,11 @@ create_project_structure() {
     add_gradle_kts "$project_name_nospace" "$project_name_nospace_lower" "$org_url_rev" "$compile_sdk" "$target_sdk" "$min_sdk"
     add_manifest "$project_name_nospace" "$package_name"
     add_main_activity "$project_name_nospace" "$package_name"
-    add_layout "$project_name_nospace"
+    add_theme_string "$project_name_nospace"
     generate_icons "$project_name_nospace"
     generate_gradle_wrapper "$project_name_nospace"
     generate_gradle_properties "$project_name_nospace"
+    generate_gitignore "$project_name_nospace"
 
     echo Changing directory to \"$project_name_nospace\"
     cd "$project_name_nospace"
